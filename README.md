@@ -1,5 +1,5 @@
-# Project Vircadia builder
-Builds Vircadia (codename "Project Athena"), an open source Interface and Server solution for virtual worlds.
+# Project Overte builder
+Builds Overte (codename "Project Athena"), an open source Interface and Server solution for virtual worlds.
 
 ## Supported platforms
 
@@ -10,8 +10,8 @@ Builds Vircadia (codename "Project Athena"), an open source Interface and Server
 * Debian 12 (codename Bookwork, can use system Qt)
 * Fedora 31 (end of life)
 * Fedora 32 (end of life)
-* Fedora 33 (can use system Qt)
-* Fedora 34 (can use system Qt)
+* Fedora 33 (end of life, can use system Qt)
+* Fedora 34 (end of life, can use system Qt)
 * Fedora 35 (can use system Qt)
 * Manjaro (can use system Qt)
     * Manjaro ARM
@@ -19,8 +19,8 @@ Builds Vircadia (codename "Project Athena"), an open source Interface and Server
     * Linux Mint 19.x
 * Ubuntu 20.04.x (codename Focal)
     * Linux Mint 20.x
-* Ubuntu 21.04 (codename Hirsute, can use system Qt)
-* Ubuntu 21.10 (codename Impish, can use system Qt)
+* Ubuntu 21.04 (end of life, codename Hirsute, can use system Qt)
+* Ubuntu 21.10 (end of life, codename Impish, can use system Qt)
 * OpenSuSE Tumbleweed
 * (more coming soon)
 
@@ -41,16 +41,16 @@ Before starting the build
 
 ## Notes on Ubuntu 18.04
 
-Vircadia requires OpenSSL 1.1 at the very least, but installing libssl-dev conflicts with installing npm. 
+Overte requires OpenSSL 1.1 at the very least, but installing libssl-dev conflicts with installing npm. 
 Therefore the system npm package can't be used, and isn't listed as a dependency. As a result, jsdoc can't be generated, and tab completion in the JS console won't work.
 
 It's possible to install npm from an outside source, and the build process should find it and use it in that case.
 
 ## Notes on Amazon Linux 2
 
-Amazon Linux is a very trimmed-down distribution that lacks some packages that are present in other distributions. Unfortunately it even lacks Perl by default, which means `vircadia-builder` can't run on a default installation.
+Amazon Linux is a very trimmed-down distribution that lacks some packages that are present in other distributions. Unfortunately it even lacks Perl by default, which means `overte-builder` can't run on a default installation.
 
-To deal with this issue, run the `install_amazon_linux_deps.sh` script before running `vircadia-builder`.
+To deal with this issue, run the `install_amazon_linux_deps.sh` script before running `overte-builder`.
 
 ## Unsupported platforms
 
@@ -58,27 +58,22 @@ To deal with this issue, run the `install_amazon_linux_deps.sh` script before ru
 
 Currently unsupported due to it's outdated and tiny package base. 
 
-* Ubuntu 16.04
-
-While the dependency lists remain in the code, functionality is not guaranteed with the current Vircadia code due to the distribution being too old to build the required software successfully without extra work.
-
-Given my lack of time, fixes are unlikely to happen, though contributed patches will be accepted if they're not too intrusive.
 
 ## Instructions:
 
-You can see the possible environment variables for building [here](https://github.com/vircadia/vircadia/blob/master/BUILD.md#generating-build-files).
+You can see the possible environment variables for building [here](https://github.com/overte-org/overte/blob/master/BUILD.md#generating-build-files).
 
-    git clone https://github.com/vircadia/vircadia-builder.git
-    cd vircadia-builder
-    chmod +x vircadia-builder
-    ./vircadia-builder
+    git clone https://github.com/overte-org/overte-builder.git
+    cd overte-builder
+    chmod +x overte-builder
+    ./overte-builder
 
 ## What it does
 
 * Installs all required packages
-* Downloads the Vircadia source from github
+* Downloads the Overte source from github
 * Downloads and compiles Qt if required
-* Compiles the Vircadia source
+* Compiles the Overte source
 * Creates a wrapper script to make it run correctly
 * Creates a desktop icon
 * Adds it to the menu
@@ -91,11 +86,11 @@ It will detect the system's core count and amount of available memory, and do a 
 
 The script by default builds the GUI ('interface') but it can also build the server components using the --build option. For instance:
 
-    $ ./vircadia-builder --build server
+    $ ./overte-builder --build server
 
 Will build only the server components. To build both, separate entries with a comma:
 
-    $ ./vircadia-builder --build server,client
+    $ ./overte-builder --build server,client
 
 Have in mind that each build overwrites the previous one, so if you want to have both desktop and server components at the same time, you need to build them both in one command like above.
 
@@ -107,18 +102,18 @@ When making an AppImage, you will want to create it on the oldest possible distr
 
 ## Qt
 
-The Vircadia codebase uses a specific, patched version of Qt. Binary packages are only available for some platforms. For platforms without a package, Qt can be built from source by the script.
+The Overte codebase uses a specific version of Qt. Binary packages are only available for some platforms. For platforms without a package, Qt can be built from source by the script.
 
 **WARNING: The Qt build uses a large amount of RAM, which can be a problem with VPSes. A minimum of 4 GB RAM + 2GB swap is recommended for building Qt with one process**. The swap usage should be tolerable, as Qt has a few very memory intensive parts in the compilation process, but the rest is much less so.
 
 In case of trouble, look at the autodetected number of cores, eg:
 
-    Checking how many cores to use for building Vircadia... 4 cores, memory limited to 2
+    Checking how many cores to use for building Overte... 4 cores, memory limited to 2
     Checking how many cores to use for building Qt... 4 cores, memory limited to 3
 
 And manually specify a lower number. For instance:
 
-    ./vircadia-builder --qt-cores 1
+    ./overte-builder --qt-cores 1
 
 
 In any case, building in low resource environments is slow and problematic. While it can be done, it might be faster and easier to do the build in Docker or a bigger VM running on a local machine, and then copy the files over.
@@ -130,7 +125,7 @@ The script is intended to be as automatic as possible, and to set it all up for 
 First, get a list of the supported distributions, and find the closest one:
 
 
-    $ ./vircadia-builder --get-supported
+    $ ./overte-builder --get-supported
     ubuntu-19.10
     linuxmint-19.3
     custom
@@ -140,9 +135,9 @@ First, get a list of the supported distributions, and find the closest one:
 
 Tell the script to dump the list of dependencies for that distro:
 
-    $ ./vircadia-builder --get-source-deps ubuntu-18.04
+    $ ./overte-builder --get-source-deps ubuntu-18.04
 	...
-	$ ./vircadia-builder --get-qt-deps ubuntu-18.04
+	$ ./overte-builder --get-qt-deps ubuntu-18.04
 	...
 
 Use those results as a starting point. Choosing a similar distribution (eg, 18.04 when running on 18.10) should mostly work, and only a few package names might need fixing. With the package list figured out, install them:
@@ -151,7 +146,7 @@ Use those results as a starting point. Choosing a similar distribution (eg, 18.0
 
 After installing the packages, you can try the script by selecting the special distro name "custom", which will perform a build without any hardcoded dependency checking:
 
-    $ ./vircadia-builder --distro custom
+    $ ./overte-builder --distro custom
 
 After that, the build process should begin. If there are problems, it's likely more packages need to be installed.
 
