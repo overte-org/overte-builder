@@ -761,6 +761,8 @@ sub build {
 	if ( $DD->{system_qt_dependencies} ) {
 		important("Using system Qt\n");
 		$ENV{VIRCADIA_USE_SYSTEM_QT} = 1;
+		$ENV{OVERTE_USE_SYSTEM_QT} = 1;
+
 		$using_system_qt = 1;
 	} elsif ( check_qt_install() ) {
 		important("Using compiled Qt\n");
@@ -778,12 +780,18 @@ sub build {
 		# less ugly way of specifying an external Qt can be introduced.
 		$ENV{VIRCADIA_USE_PREBUILT_QT}=1;
 		$ENV{VIRCADIA_USE_QT_VERSION}="";
+
+		$ENV{OVERTE_USE_PREBUILT_QT}=1;
+		$ENV{OVERTE_USE_QT_VERSION}="";
+
 		$ENV{HIFI_QT_BASE} = "$root_dir";
 
 		# Finally, the single, clean solution to the issue, after PR #936
 		# The above is obsolete, and can be removed after a while.
 		# Suggested cleanup date: Jan 1, 2022.
 		$ENV{VIRCADIA_QT_PATH} = "$root_dir/qt5-install";
+		$ENV{OVERTE_QT_PATH} = "$root_dir/qt5-install";
+
 	}
 
 
