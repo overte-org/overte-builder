@@ -1,17 +1,17 @@
 #!/bin/bash
-if [ ! -x "/builder/vircadia-builder" ] ; then
+if ( ! readlink /proc/1/exe | grep -Eq '/bash|zsh|sh/' ) ; then
 	echo "This script is made to be run from inside a test container"
 	exit 1
 fi
 
-if ( /builder/vircadia-builder "$@" ) ; then
+if ( /builder/overte-builder "$@" ) ; then
 	echo "Test successful!"
 else
 	echo "Test failed and exited with code $?"
 	echo "Use this shell to test and diagnose the problem."
 	echo "The source tree is at /builder"
 	echo "The command run was:"
-	echo /builder/vircadia-builder "$@"
+	echo /builder/overte-builder "$@"
 
 	bash
 fi

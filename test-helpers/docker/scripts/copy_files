@@ -11,7 +11,7 @@ echo "SRC: $src; DST: $dst"
 [ -d "$dst" ] && rm -rf "$dst"
 mkdir -p "$dst" "$dst/distros" "$dst/lib"
 
-cp    "$src/vircadia-builder"              "$dst/"
+cp    "$src/overte-builder"                "$dst/"
 cp    "$src/install_amazon_linux_deps.sh"  "$dst/"
 cp -r "$src/lib"                           "$dst/"
 cp -r "$src/distros"                       "$dst/"
