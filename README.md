@@ -21,6 +21,8 @@ Builds Overte (codename "Project Athena"), an open source Interface and Server s
     * Linux Mint 20.x
 * Ubuntu 21.04 (end of life, codename Hirsute, can use system Qt)
 * Ubuntu 21.10 (end of life, codename Impish, can use system Qt)
+* Ubuntu 22.04 (codename Jammy Jellyfish, can use system Qt)
+* Ubuntu 22.10 (codename Kinetic Kudu, can use system Qt)
 * OpenSuSE Tumbleweed
 * (more coming soon)
 
@@ -174,7 +176,7 @@ In addition to any packages that may be needed to do the build:
 
 It's extremely variable, depending greatly on hardware. Here are some sample numbers, only of the compilation process:
 
-| Processor                           | Qt           | CMake | Vircadia Client  | Vircadia Server |
+| Processor                           | Qt           | CMake | Overte Client  | Overte Server |
 | ------------                        | ------------ | ----- | ------------   | ----------    |
 | Ryzen 9 3950X, using 32 cores       | 19:01        | ?     | 4:07           | ?             |
 | Ryzen 9 3950X, using 16 cores in VM | 25:32        | ?     | 4:46           | ?             |
