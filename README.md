@@ -192,4 +192,8 @@ The script is intended to be friendly and not kill the user's machine through me
 
 ## Contact
 
-For questions and support, contact Dale Glass#8576 on Discord.
+This is part of the Overte project. In case of problems, open an issue. For additional help, ask on:
+
+* Matrix: https://matrix.to/#/#overte:overte.org
+* Discord: https://discord.gg/4YuQvc8K2f
+
