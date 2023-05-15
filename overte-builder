@@ -1974,7 +1974,14 @@ sub install_into_appimage {
 	info( "\r" . (" " x $prev_len) . "\r");
 
 	info("Copying Qt5 files to $appimage_qtdir\n");
-	run("cp", "-rdp", "$root_dir/qt5-install", $appimage_qtdir);
+
+	if ( -d "$root_dir/qt5-install" ) {
+		# We've built Qt locally
+		run("cp", "-rdp", "$root_dir/qt5-install", $appimage_qtdir);
+	} else {
+		# Qt was downloaded by cmake
+		run("cp", "-rdp", "$files_dir/qt/qt5-install", $appimage_qtdir);
+	}
 
 	# Clear line
 	info( "\r" . (" " x $prev_len) . "\r");
