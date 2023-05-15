@@ -154,6 +154,7 @@ my $repo_tag;
 my $root_dir     = "$ENV{HOME}/Vircadia";
 my $inst_dir     = "$root_dir/install"; # Where files will be installed
 my $binary_dir   = $inst_dir;           # Where the final binaries are found
+my $files_dir    = "$ENV{HOME}/overte-files"; # Where cmake downloads files to
 
 my $rel_type     = "DEV"; # DEV by default.
 my $rel_no       = "";
@@ -245,16 +246,20 @@ if ( $opt_pr ) {
 	if ( $opt_pr =~ m#https://github.com/vircadia/vircadia/pulls/(\d+)# ) {
 		$opt_pr = $1;
 		$opt_fork = "vircadia";
+		$files_dir = "$ENV{HOME}/vircadia-files";
 	} elsif ( $opt_pr =~ m#https://github.com/overte-org/overte/pull/(\d+)# ) {
 		$opt_pr = $1;
 		$opt_fork = "overte";
+		$files_dir = "$ENV{HOME}/overte-files";
 	} elsif ( $opt_pr =~ m#https://github.com/tivolicloud/interface/pull/(\d+)# ) {
 		$opt_pr = $1;
 		$opt_fork = "tivoli";
+		$files_dir = "$ENV{HOME}/tivoli-files";
 	} elsif ( $opt_pr =~ m#https://github.com/(\w+)/(\w+)/pull/(\d+)# ) {
 		$opt_fork = $1;
 		$repo     = "https://github.com/$1/$2";
 		$opt_pr = $3;
+		$files_dir = "$ENV{HOME}/overte-files";
 
 		# This ensures we don't fail due to an unrecognized fork name later.
 		$custom_fork = 1;
