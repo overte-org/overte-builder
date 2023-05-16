@@ -173,6 +173,8 @@ my ($opt_keep_source, $opt_auto, $opt_build_qt, $opt_build, $opt_skip_build, $op
 my ($opt_qt_debug, $opt_qt_debug_info, $cmd_get_install_dir, $cmd_get_archive_name, $cmd_make_archive, $opt_debug);
 my ($cmd_help, $cmd_get_supported, $cmd_get_source_deps, $cmd_get_qt_deps, $cmd_get_system_qt_deps, $cmd_get_qt_version, $cmd_get_qt_patches, $cmd_make_pkglist);
 my ($opt_fork, $opt_pr);
+my $build_type = "RelWithDebInfo";
+
 
 $opt_build = "client";
 
@@ -186,6 +188,7 @@ GetOptions(
 	"auto|y"                 => \$opt_auto,
 	"repo|r=s"               => \$repo,
 	"tag|t=s"                => \$repo_tag,
+	"build-type|T=s"         => \$build_type,
 	"release-type=s"         => \$rel_type,
 	"release-number=s"       => \$rel_no,
 	"build-number=s"         => \$build_no,
@@ -625,7 +628,7 @@ sub import_nvm_environment {
 
 
 			# On Ubuntu 18.04, /bin/sh is dash, which doesn't recognize the source command.
-			# We try and force using bash if at all possible. If that doesn't work, we'll 
+			# We try and force using bash if at all possible. If that doesn't work, we'll
 			# try whatever Perl wants to invoke, but that might not work.
 			foreach my $sh (qw(/bin/bash /usr/bin/bash)) {
 				if ( -x "$sh") {
@@ -693,6 +696,7 @@ sub collect_info {
 		$repo            = $rl->readline("Git repository             : ", $repo);
 		$repo_tag        = $rl->readline("Git tag                    : ", $repo_tag);
 		$rel_type        = $rl->readline("Release type               : ", $rel_type);
+		$build_type      = $rl->readline("Build type                 : ", $build_type);
 		$rel_no          = $rl->readline("Release number             : ", $rel_no);
 		$build_no        = $rl->readline("Build number               : ", $build_no);
 		$root_dir        = $rl->readline("Installation dir           : ", $root_dir);
@@ -817,6 +821,10 @@ sub build {
 			push @cmake_extra_opts, "-DVIRCADIA_CPU_ARCHITECTURE=" . $optimization_presets->{$optimization_level}->{flags};
 		}
 	}
+
+	push @cmake_extra_opts, "-DCMAKE_BUILD_TYPE=${build_type}";
+
+	important("Running cmake " . join(' ', @cmake_extra_opts) . "\n");
 
 	run($DD->{cmake}, "../source", @cmake_extra_opts);
 	my @make_extra_opts;
@@ -2368,6 +2376,7 @@ Options:
 	-P, --pr PR             Builds the specified pull request. PR is either a PR number, or the URL to the PR on Github
 	-r, --repo REPO         Set the repository to REPO
 	-t, --tag TAG           Set the tag to TAG
+	-T, --build-type type   CMake build type: RelWithDebInfo, Debug, Release, MinSizeRel.
 	-v, --verbose           Run a verbose build, showing the full compiler commands
 	-y, --auto              Run without asking any questions
 	--qt-debug              Build Qt in debug mode
