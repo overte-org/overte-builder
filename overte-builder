@@ -172,7 +172,7 @@ my $using_system_qt;
 my ($opt_keep_source, $opt_auto, $opt_build_qt, $opt_build, $opt_skip_build, $opt_skip_systemd_restart, $opt_no_modify_rpath, $opt_skip_install, $opt_make_appimage, $opt_install_deps_only, $opt_verbose);
 my ($opt_qt_debug, $opt_qt_debug_info, $cmd_get_install_dir, $cmd_get_archive_name, $cmd_make_archive, $opt_debug);
 my ($cmd_help, $cmd_get_supported, $cmd_get_source_deps, $cmd_get_qt_deps, $cmd_get_system_qt_deps, $cmd_get_qt_version, $cmd_get_qt_patches, $cmd_make_pkglist);
-my ($opt_fork, $opt_pr);
+my ($opt_fork, $opt_fork_appimage_id, $opt_pr);
 my $build_type = "RelWithDebInfo";
 
 
@@ -1948,7 +1948,7 @@ sub install_into_appimage {
 	}
 
 	my $appimage_base    = "$root_dir/$fork_name.AppImage";
-	my $appimage_instdir = "$appimage_base/vircadia";
+	my $appimage_instdir = "$appimage_base/$opt_fork";
 	my $appimage_qtdir   = "$appimage_base/qt5-install";
 	my $tool_path        = "$root_dir/appimagetool.${appimagetool_release}";
 
@@ -2025,7 +2025,7 @@ sub install_into_appimage {
 	info_ok("done.\n");
 
 	mkdir_path("$appimage_base/usr/bin");
-	symlink("../../vircadia/interface/interface", "$appimage_base/usr/bin/$fork_name");
+	symlink("../../$opt_fork/interface/interface", "$appimage_base/usr/bin/$fork_name");
 
 	create_desktop_file("$appimage_base/$fork_name.desktop",
 	                    "$fork_name", "$fork_name");
@@ -2107,13 +2107,13 @@ sub install_into_appimage {
 
 	# Qt needs to be pointed to where its own files are
 	info("Creating qt.conf...");
-	open(my $qtconf, '>', "$appimage_base/vircadia/interface/qt.conf") or fatal("Can't create qt.conf: $!");
+	open(my $qtconf, '>', "$appimage_base/$opt_fork/interface/qt.conf") or fatal("Can't create qt.conf: $!");
 	print $qtconf "[Paths]\n";
 	print $qtconf "Prefix=../../qt5-install/\n";
 	close $qtconf;
 
 	info("Creating AppRun... ");
-	symlink("vircadia/interface/interface", "$appimage_base/AppRun");
+	symlink("$opt_fork/interface/interface", "$appimage_base/AppRun");
 	info_ok("done.\n");
 
 	# AppStream metadata support is fairly broken in AppImages.
