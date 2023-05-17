@@ -353,6 +353,10 @@ set_environment();
 #    * System Qt is not supported.
 my $need_to_build_qt = $opt_build_qt || (!$DD->{has_binary_qt_package}  && !$DD->{system_qt_dependencies});
 
+if ( $DD->{system_qt_dependencies} ) {
+		$using_system_qt = 1;
+}
+
 install_missing_packages();
 
 exit(0) if ( $opt_install_deps_only );
@@ -1983,7 +1987,9 @@ sub install_into_appimage {
 
 	info("Copying Qt5 files to $appimage_qtdir\n");
 
-	if ( -d "$root_dir/qt5-install" ) {
+	if ($using_system_qt ) {
+		info("Using system Qt\n");
+	} elsif ( -d "$root_dir/qt5-install" ) {
 		# We've built Qt locally
 		run("cp", "-rdp", "$root_dir/qt5-install", $appimage_qtdir);
 	} else {
