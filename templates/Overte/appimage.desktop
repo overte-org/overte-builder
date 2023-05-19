@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Overte
+Terminal=false
+Type=Application
+Exec=$application
+Icon=$icon
+Categories=Graphics
+X-AppImage-Version=$version

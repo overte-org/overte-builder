@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright 2023 Dale Glass <dale\@daleglass.net>
+    Copyright 2023 Overte e.V.
+-->
+<component type="desktop-application">
+  <id>org.overte.interface</id>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>Apache-2.0</project_license>
+  <name>Overte</name>
+  <summary>Overte client</summary>
+  <developer_name>Overte e.V.</developer_name>
+  <content_rating type="oars-1.1">
+    <content_attribute id="social-chat">moderate</content_attribute>
+    <content_attribute id="social-audio">moderate</content_attribute>
+  </content_rating>
+  <description>
+    <p>
+        Overte is an open source virtual worlds and social VR software which enables you to create and share virtual worlds as virtual reality (VR) and desktop experiences. You can create and host your own virtual world, explore other worlds, meet and connect with other users, attend or host live VR events, and much more.
+    </p>
+    <p>
+        The Overte software provides the following key features:
+    </p>
+    <ul>
+        <li>Collaborative world creation and editing</li>
+        <li>VR support, including body tracking</li>
+        <li>Scalability for up to 500 users in a single world</li>
+        <li>Scripting in JavaScript, which allows creation of games, interactables, UI elements, and custom applications</li>
+        <li>High quality low latency spatial audio</li>
+        <li>Powerful physics through Bullet physics engine</li>
+        <li>Fully open-source under the permissive Apache 2.0 license</li>
+        <li>No central authority. You can run your own server from home.</li>
+        <li>No user account required</li>
+        <li>Supported by a democratic non-profit organization</li>
+    </ul>
+  </description>
+  <categories>
+      <category>Graphics</category>
+      <category>Network</category>
+      <category>AudioVideo</category>
+  </categories>
+  <launchable type="desktop-id">org.overte.interface.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Creation UI</caption>
+      <image>https://overte.org/_images/Create_UI_2.jpeg</image>
+    </screenshot>
+    <screenshot>
+      <caption>Development meeting</caption>
+      <image>https://overte.org/_images/overte-snap-by-X74hc595-on-2023-02-25_20-34-29.jpg</image>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">https://overte.org/</url>
+  <url type="bugtracker">https://github.com/overte-org/overte/issues</url>
+  <url type="help">https://docs.overte.org/</url>
+  <url type="translate">https://weblate.overte.org/</url>
+  <project_group>Internet</project_group>
+
+  <provides>
+    <binary>Overte</binary>
+  </provides>
+
+<!--
+  <releases>
+    <release version="3.12.2" date="2013-04-12">
+      <description>
+        <p>Fixes issues X, Y and Z</p>
+      </description>
+    </release>
+  </releases>
+  <developer_name>$fork_name</developer_name>
+-->
+</component>
