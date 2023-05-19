@@ -322,11 +322,16 @@ if ( $opt_fork eq "vircadia" ) {
 	die "Unrecognized fork: $opt_fork" unless ($custom_fork);
 }
 
+
+
+
 debug("Fork is $fork_name, repo $repo\n");
 
 $root_dir     = "$ENV{HOME}/$fork_name";
 $inst_dir     = "$root_dir/install"; # Where files will be installed
 $binary_dir   = $inst_dir;           # Where the final binaries are found
+
+$template->version(get_source_version());
 
 
 help(1) if ($cmd_help);
@@ -1410,24 +1415,7 @@ sub create_service {
 }
 
 
-sub mkdir_path {
-	my (@parts) = @_;
 
-	if (scalar @parts == 1) {
-		# If we only have one argument, assume it's a concatenated path
-		@parts = File::Spec->splitdir($parts[0]);
-	}
-
-	my $path = "";
-
-	while(@parts) {
-		$path .= "/" if ($path || $parts[0] eq "");
-		$path .= shift(@parts);
-		if ( ! mkdir($path) ) {
-			fatal("Can't create '$path': $! (mkpath " . join(';', @parts) . ")" ) unless ($!{EEXIST});
-		}
-	}
-}
 
 sub join_path {
 	my (@parts) = @_;
@@ -2051,8 +2039,8 @@ sub install_into_appimage {
 	#create_desktop_file("$appimage_base/$fork_name.desktop",
 	#                    "$fork_name", "$fork_name");
 
-	mkdir_path("$appimage_base/usr/share/applications");
-	$template->write_appimage_desktop_file("$appimage_base/usr/share/applications",
+	#mkdir_path("$appimage_base/usr/share/applications");
+	$template->write_appimage_desktop_file($appimage_base,
 	                                       icon        => "/${fork_name}",
 										   application => "/AppRun"
 										  );
@@ -2151,9 +2139,11 @@ sub install_into_appimage {
 	if ( system("appstream-util") == 0 ) {
 		warning("appstream-util found. Please uninstall appstream-util to be able to include AppStream metadata. See https://github.com/AppImage/AppImageKit/issues/603");
 	} else {
-		info_ok("appstream-util not found. Adding AppStream metadata.");
-		create_appimage_metadata("$appimage_base/usr/share/metainfo/$fork_name.appdata.xml");
+		info_ok("appstream-util not found. Adding AppStream metadata.\n");
+		#create_appimage_metadata("$appimage_base/usr/share/metainfo/$fork_name.appdata.xml");
+		$template->write_appstream($appimage_base);
 	}
+
 	info("Creating AppImage...");
 	chdir($root_dir);
 	run($tool_path, $appimage_base);

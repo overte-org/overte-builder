@@ -3,6 +3,9 @@ package VircadiaBuilder::Template;
 
 use strict;
 use Exporter;
+use VircadiaBuilder::Common;
+use File::Basename qw(dirname);
+
 our (@EXPORT, @ISA);
 
 
@@ -91,6 +94,8 @@ sub version {
 
 Writes the AppStream XML to the $destination directory.
 
+$destination must be the root of the AppImage.
+
 Returns the full path to the generated file.
 
 The right filename depends on the fork being used, so this function
@@ -99,16 +104,16 @@ will generate and return the right filename when called.
 =cut
 
 sub write_appstream {
-    my ($self, $destination, %values) = @_;
+    my ($self, $appimage_dir, %values) = @_;
 
     my $dest_filename;
 
     if ( $self->{fork} eq "Overte" ) {
-        $dest_filename = "$destination/org.overte.interface.appdata.xml";
+        $dest_filename = "$appimage_dir/usr/share/metainfo/org.overte.interface.appdata.xml";
     } elsif ( $self->{fork} eq "Vircadia" ) {
-        $dest_filename = "$destination/Vircadia.appdata.xml";
+        $dest_filename = "$appimage_dir/usr/share/metainfo/com.vircadia.interface.appdata.xml";
     } elsif ( $self->{fork} eq "Tivoli" ) {
-        $dest_filename = "$destination/Tivoli.appdata.xml";
+        $dest_filename = "$appimage_dir/usr/share/metainfo/com.tivolivr.interface.appdata.xml";
     } else {
         die "Unknown fork: $self->{fork}";
     }
@@ -118,24 +123,38 @@ sub write_appstream {
     return $dest_filename;
 }
 
-sub write_appimage_desktop_file {
-    my ($self, $destination, %values) = @_;
 
+=item write_appimage_desktop_file($destination, %values)
+
+Writes the .desktop file for an AppImage to the $destination directory.
+
+$destination must be the root of the AppImage.
+
+Returns the full path to the generated file.
+
+=cut
+
+sub write_appimage_desktop_file {
+    my ($self, $appimage_dir, %values) = @_;
+
+    my $dest_dir = "$appimage_dir/usr/share/applications";
     my $dest_filename;
 
     if ( $self->{fork} eq "Overte" ) {
-        $dest_filename = "$destination/org.overte.interface.desktop";
+        $dest_filename = "org.overte.interface.desktop";
     } elsif ( $self->{fork} eq "Vircadia" ) {
-        $dest_filename = "$destination/com.vircadia.interface.desktop";
+        $dest_filename = "com.vircadia.interface.desktop";
     } elsif ( $self->{fork} eq "Tivoli" ) {
-        $dest_filename = "$destination/com.tivolivr.interface.desktop";
+        $dest_filename = "com.tivolivr.interface.desktop";
     } else {
         die "Unknown fork: '" . $self->{fork} . "'";
     }
 
-    $self->_deploy("appimage.desktop", $dest_filename, %values);
+    $self->_deploy("appimage.desktop", "$dest_dir/$dest_filename", %values);
+    symlink("usr/share/applications/$dest_filename", "$appimage_dir/$dest_filename");
 
-    return $dest_filename;
+
+    return "$dest_dir/$dest_filename";
 
 }
 
@@ -165,6 +184,8 @@ sub _deploy {
         $data =~ s/\$${k}/$v/g;
     }
 
+    my $dir = dirname($destination);
+    mkdir_path($dir);
 
     open(my $out, '>', $destination) or die "Failed to write to '$destination': $!";
     print $out $data;

@@ -6,6 +6,8 @@ use Term::ANSIColor;
 use Symbol qw(gensym);
 use Exporter;
 use IPC::Open3;
+use File::Spec;
+
 our (@EXPORT, @ISA);
 
 my $timestamp = make_timestamp();
@@ -16,7 +18,10 @@ our $collect_system_info;
 
 BEGIN {
 	@ISA = qw(Exporter);
-	@EXPORT = qw( run info info_ok warning important debug fatal write_to_log init_log $collect_system_info read_from_cmd read_from_cmd_into_file );
+	@EXPORT = qw( info info_ok warning important debug fatal
+	              run write_to_log init_log $collect_system_info
+				  read_from_cmd read_from_cmd_into_file mkdir_path
+			    );
 }
 
 sub error_to_text {
@@ -269,6 +274,25 @@ sub make_timestamp {
 	# Avoid need for strftime
 	my ($sec, $min, $hour, $mday, $month, $year) = localtime(time);
 	return sprintf("%04i-%02i-%02i_T%02i_%02i_%02i", $year + 1900, $month, $mday, $hour, $min, $sec);
+}
+
+sub mkdir_path {
+	my (@parts) = @_;
+
+	if (scalar @parts == 1) {
+		# If we only have one argument, assume it's a concatenated path
+		@parts = File::Spec->splitdir($parts[0]);
+	}
+
+	my $path = "";
+
+	while(@parts) {
+		$path .= "/" if ($path || $parts[0] eq "");
+		$path .= shift(@parts);
+		if ( ! mkdir($path) ) {
+			fatal("Can't create '$path': $! (mkpath " . join(';', @parts) . ")" ) unless ($!{EEXIST});
+		}
+	}
 }
 
 1;
