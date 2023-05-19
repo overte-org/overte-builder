@@ -839,10 +839,18 @@ sub build {
 
 	my @cmake_extra_opts;
 	if ( $opt_debug ) {
-		push @cmake_extra_opts, "-DVIRCADIA_OPTIMIZE=0";
+		if ( $fork_name eq "Overte" ) {
+			push @cmake_extra_opts, "-DOVERTE_OPTIMIZE=0";
+		} else {
+			push @cmake_extra_opts, "-DVIRCADIA_OPTIMIZE=0";
+		}
 	} else {
 		if ( exists $optimization_presets->{$optimization_level} ) {
-			push @cmake_extra_opts, "-DVIRCADIA_CPU_ARCHITECTURE=" . $optimization_presets->{$optimization_level}->{flags};
+			if ( $fork_name eq "Overte" ) {
+				push @cmake_extra_opts, "-DOVERTE_CPU_ARCHITECTURE=" . $optimization_presets->{$optimization_level}->{flags};
+			} else {
+				push @cmake_extra_opts, "-DVIRCADIA_CPU_ARCHITECTURE=" . $optimization_presets->{$optimization_level}->{flags};
+			}
 		}
 	}
 
@@ -2052,7 +2060,7 @@ sub install_into_appimage {
 	info("Finding plugins...\n");
 	my @plugin_dirs = ("$root_dir/qt5-install/plugins/platforms", "$root_dir/build/$target/plugins");
 	if ( $using_system_qt ) {
-		push @plugin_dirs, "/usr/lib64/qt5/plugins/platforms";
+		push @plugin_dirs, "/usr/lib64/qt5/plugins/ ";
 	}
 
 	foreach my $plugin_dir (@plugin_dirs) {
