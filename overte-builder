@@ -2050,7 +2050,12 @@ sub install_into_appimage {
 	my @dep_list = ldd("$root_dir/build/$target/$target");
 
 	info("Finding plugins...\n");
-	foreach my $plugin_dir ("$root_dir/qt5-install/plugins/platforms", "$root_dir/build/$target/plugins") {
+	my @plugin_dirs = ("$root_dir/qt5-install/plugins/platforms", "$root_dir/build/$target/plugins");
+	if ( $using_system_qt ) {
+		push @plugin_dirs, "/usr/lib64/qt5/plugins/platforms";
+	}
+
+	foreach my $plugin_dir (@plugin_dirs) {
 		info("Trying $plugin_dir... ");
 		if ( -d "$plugin_dir" ) {
 			info_ok("found, scanning...\n");
