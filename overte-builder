@@ -2141,7 +2141,7 @@ sub install_into_appimage {
 	info("Adjusting rpath...");
 	find({ follow      => 1,
 	       follow_skip => 2,
-	       wanted      => sub { add_lib_path_search_func("$appimage_base/usr/lib64/") }},
+	       wanted      => sub { add_lib_path_search_func("$appimage_base/usr/lib64", "$appimage_base/qt5-install/lib"); }},
 	       $appimage_base);
 
 	info_ok("done.\n");
@@ -2290,13 +2290,15 @@ sub is_prepackaged_qt_lib {
 }
 
 # For AppImage, all library paths have to be relative.
+# This function calculates the relative paths to the passed library directories, and adds them to
+# each binary.
 sub add_lib_path_search_func {
-	my ($libdir) = @_;
+	my (@libdirs) = @_;
 	my $abspath = $File::Find::name;
 	my $absdir  = $File::Find::dir;
 
 	if ( -f $abspath && -x $abspath && !-l $abspath && is_elf($abspath) )  {
-		my $rel_libpath = File::Spec->abs2rel($libdir, $absdir);
+
 
 		my $rpath = read_from_cmd("patchelf", "--print-rpath", $abspath);
 		chomp $rpath;
@@ -2304,8 +2306,12 @@ sub add_lib_path_search_func {
 
 		$rpaths{'$ORIGIN'} = 1;
 
-		if ( $rel_libpath ne "." ) {
-			$rpaths{'$ORIGIN/' . $rel_libpath} = 1;
+		foreach my $libdir (@libdirs) {
+			my $rel_libpath = File::Spec->abs2rel($libdir, $absdir);
+
+			if ( $rel_libpath ne "." ) {
+				$rpaths{'$ORIGIN/' . $rel_libpath} = 1;
+			}
 		}
 
 		run("patchelf", "--set-rpath", join(':', sort keys %rpaths), $abspath);
