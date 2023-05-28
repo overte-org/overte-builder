@@ -1918,7 +1918,11 @@ sub parse_build_option {
 
 sub file_is_under_dir {
 	my ($file, $dir) = @_;
-	return substr($file, 0, length($dir)) eq $dir;
+
+	my $abs_file = abs_path($file);
+	my $abs_dir = abs_path($dir);
+
+	return substr($abs_file, 0, length($abs_dir)) eq $abs_dir;
 }
 
 sub download_appimage_tool {
@@ -2214,8 +2218,15 @@ sub ldd {
 
 		$path =~ s/\s+\([0-9a-fA-Fx]*\)//;
 
-		if ( is_system($path) ) {
+		if ( is_excluded_system_lib($path) ) {
 			debug("$soname: excluded\n");
+			next;
+		}
+
+		if (!$using_system_qt && is_prepackaged_qt_lib($path)) {
+			# When we have a pre-built package we ignore files within here,
+			# as it will be copied as-is.
+			debug("$soname: $path is a pre-packaged Qt library, will be copied later");
 			next;
 		}
 
@@ -2225,19 +2236,12 @@ sub ldd {
 			fatal("Can't find library '$soname' for binary '$binary'");
 		}
 
-		if ( $path =~ /libQt5Core.so.5.13.2/ ) {
-			die "$binary uses $path";
-		}
-
 		# abs_path canonicalizes a path, but that includes resolving
 		# symlinks. We don't want that. We want the original filename
 		# the binary is referencing.
 		my $orig_filename=basename($path);
 		$path = File::Spec->catfile(dirname(abs_path($path)), $orig_filename);
 
-		if ( $path =~ /libQt5Core.so.5.13.2/ ) {
-			die "$binary uses $path";
-		}
 		push @deps, $path;
 		info(".");
 	}
@@ -2253,7 +2257,7 @@ sub ldd {
 	return @deps;
 }
 
-sub is_system {
+sub is_excluded_system_lib {
 	my ($path) = @_;
 
 	foreach my $re (@excluded_system_libs) {
@@ -2268,6 +2272,15 @@ sub is_system {
 	return 0;
 }
 
+sub is_prepackaged_qt_lib {
+	my ($path) = @_;
+
+	if (file_is_under_dir($path, "${files_dir}/qt/qt5-install")) {
+		return 1;
+	}
+
+	return 0;
+}
 
 # For AppImage, all library paths have to be relative.
 sub add_lib_path_search_func {
