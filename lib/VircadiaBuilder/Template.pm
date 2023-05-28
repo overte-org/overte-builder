@@ -158,6 +158,51 @@ sub write_appimage_desktop_file {
 
 }
 
+=item write_appimage_packaged_qtconf_file($destination, %values)
+
+Writes the qt.conf for an AppImage to the $destination directory when Qt is prepackaged.
+
+This config file tells Qt where to look for its files, and is necessary to make
+the AppImage work properly.
+
+This is the pre-packaged Qt version.
+
+$destination must be the root of the AppImage.
+
+Returns the full path to the generated file.
+
+=cut
+
+sub write_appimage_packaged_qtconf_file {
+    my ($self, $appimage_dir, %values) = @_;
+    my $dest_dir = $appimage_dir;
+    my $dest_file = "$dest_dir/overte/interface/qt.conf";
+
+    $self->_deploy("qt.conf", $dest_file, %values);
+
+    return $dest_file;
+}
+
+=item write_appimage_apprun_file($destination, %values)
+
+Writes the AppRun for an AppImage.
+
+$destination must be the root of the AppImage.
+
+Returns the full path to the generated file.
+
+=cut
+
+sub write_appimage_apprun_file {
+    my ($self, $appimage_dir, %values) = @_;
+    my $dest_dir = $appimage_dir;
+
+    $self->_deploy("AppRun", "$dest_dir/AppRun", %values);
+    chmod(0755, "$dest_dir/AppRun");
+
+    return "$dest_dir/AppRun";
+}
+
 
 sub _deploy {
     my ($self, $source_file, $destination, %values) = @_;

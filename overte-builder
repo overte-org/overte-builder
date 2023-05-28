@@ -2059,6 +2059,10 @@ sub install_into_appimage {
 										  );
 
 
+	if (!$using_system_qt) {
+		$template->write_appimage_packaged_qtconf_file($appimage_base);
+	}
+
 	info("Finding library dependencies...\n");
 	my @dep_list = ldd("$root_dir/build/$target/$target");
 
@@ -2146,15 +2150,9 @@ sub install_into_appimage {
 
 	info_ok("done.\n");
 
-	# Qt needs to be pointed to where its own files are
-	info("Creating qt.conf...");
-	open(my $qtconf, '>', "$appimage_base/$opt_fork/interface/qt.conf") or fatal("Can't create qt.conf: $!");
-	print $qtconf "[Paths]\n";
-	print $qtconf "Prefix=../../qt5-install/\n";
-	close $qtconf;
-
 	info("Creating AppRun... ");
-	symlink("$opt_fork/interface/interface", "$appimage_base/AppRun");
+	$template->write_appimage_apprun_file($appimage_base);
+
 	info_ok("done.\n");
 
 	# AppStream metadata support is fairly broken in AppImages.
