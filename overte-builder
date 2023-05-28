@@ -2086,6 +2086,13 @@ sub install_into_appimage {
 
 	my %deps = map { $_ => 1 } @dep_list;
 
+	# Some files don't seem to be properly detected as dependencies, probably loaded
+	# at runtime with dlopen. Force them into the package.
+	foreach my $file (glob("/usr/lib/x86_64-linux-gnu/libxcb*"), glob("/usr/lib/x86_64-linux-gnu/libxkb*")) {
+		info("Hack: Adding $file\n");
+		$deps{$file} = 1;
+	}
+
 	info("Copying missing system libraries... ");
 	mkdir_path("$appimage_base/usr/lib64");
 
