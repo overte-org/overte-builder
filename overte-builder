@@ -2211,7 +2211,9 @@ sub install_into_appimage {
 
 	info("Creating AppImage...\n");
 	chdir($root_dir);
-	run($tool_path, $appimage_base);
+	my $appimage_filename = $template->fork_id . "-" . $template->version . "-x86_64.AppImage";
+
+	run($tool_path, $appimage_base, $appimage_filename);
 
 
 	info("Stripping symbols for non-debug AppImage...\n");
@@ -2231,8 +2233,16 @@ sub install_into_appimage {
 	);
 
 	info("Creating stripped AppImage...\n");
-	run($tool_path, $appimage_base, "Overte-x86_64-nodebug.AppImage");
+	my $appimage_filename_nodebug = $template->fork_id . "-" . $template->version . "-nodebug-x86_64.AppImage";
+	run($tool_path, $appimage_base, $appimage_filename_nodebug);
 
+	info("Created AppImage with debugging   : ");
+	info_ok( File::Spec->join($root_dir, $appimage_filename) . "\n");
+
+	info("Created AppImage without debugging: ");
+	info_ok( File::Spec->join($root_dir, $appimage_filename_nodebug) . "\n");
+
+	info("\n");
 }
 
 sub create_appimage_metadata {
