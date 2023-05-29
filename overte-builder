@@ -2194,6 +2194,11 @@ sub install_into_appimage {
 
 	info_ok("done.\n");
 
+	info("Cleaning up any duplicates...\n");
+	# AppImage
+	run({ fail_ok => 1}, "rdfind", "$appimage_base", "-makesymlinks", "true", "-dryrun", "false");
+
+
 	info("Creating AppRun... ");
 	$template->write_appimage_apprun_file($appimage_base);
 
@@ -2211,9 +2216,30 @@ sub install_into_appimage {
 		$template->write_appstream($appimage_base);
 	}
 
-	info("Creating AppImage...");
+	info("Creating AppImage...\n");
 	chdir($root_dir);
 	run($tool_path, $appimage_base);
+
+
+	info("Stripping symbols for non-debug AppImage...\n");
+	find(
+		sub {
+			my $path = $File::Find::name;
+			my $name = basename($path);
+
+			# strip complains if used on non-compatible files, so filter them out
+			return if ($name =~ /(AppRun|\._libsteam_api.so|\._libsdkencryptedappticket.so)$/);
+			return if ($name =~ /\.(pl|sh|svg|py|)$/);
+
+			if ( -f "$path" && ($name =~ /\.so/ || -x $path)) {
+				run({ fail_ok => 1, }, "strip", "--strip-unneeded", "--strip-debug", $File::Find::name);
+			}
+		}, $appimage_base
+	);
+
+	info("Creating stripped AppImage...\n");
+	run($tool_path, $appimage_base, "Overte-x86_64-nodebug.AppImage");
+
 }
 
 sub create_appimage_metadata {
