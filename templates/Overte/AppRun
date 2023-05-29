@@ -26,6 +26,7 @@ if [ "$QT_QPA_PLATFORM" == "wayland-egl" ] ; then
     fi
 fi
 
+export LD_LIBRARY_PATH=$curdir/usr/lib64
 if [ -x "$curdir/overte/interface/interface" ] ; then
     exec "$curdir/overte/interface/interface" "$@"
 else
