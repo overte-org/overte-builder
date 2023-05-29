@@ -357,8 +357,6 @@ $root_dir     = "$ENV{HOME}/$fork_name";
 $inst_dir     = "$root_dir/install"; # Where files will be installed
 $binary_dir   = $inst_dir;           # Where the final binaries are found
 
-$template->version(get_source_version());
-
 
 help(1) if ($cmd_help);
 
@@ -413,11 +411,15 @@ collect_info();
 
 unless($opt_skip_build) {
 	get_source();
+	$template->version(get_source_version());
+
 	$inst_dir = get_install_dir_path();
 	$binary_dir = $opt_skip_install ? "$root_dir/build" : $inst_dir;
 
 	install_qt() if ($need_to_build_qt);
 	build();
+} else {
+	$template->version(get_source_version());
 }
 
 # Ensure the paths are set if we didn't build
