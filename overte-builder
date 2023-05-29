@@ -2204,17 +2204,8 @@ sub install_into_appimage {
 
 	info_ok("done.\n");
 
-	# AppStream metadata support is fairly broken in AppImages.
-	# We are working around this by making sure that appstream-util is NOT available to check the metadata.
-	# See https://github.com/AppImage/AppImageKit/issues/603
-	info("Checking for appstream-util... ");
-	if ( system("appstream-util") == 0 ) {
-		warning("appstream-util found. Please uninstall appstream-util to be able to include AppStream metadata. See https://github.com/AppImage/AppImageKit/issues/603");
-	} else {
-		info_ok("appstream-util not found. Adding AppStream metadata.\n");
-		#create_appimage_metadata("$appimage_base/usr/share/metainfo/$fork_name.appdata.xml");
-		$template->write_appstream($appimage_base);
-	}
+	info("Writing AppStream metadata");
+	$template->write_appstream($appimage_base);
 
 	info("Creating AppImage...\n");
 	chdir($root_dir);
