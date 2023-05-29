@@ -51,6 +51,13 @@ my $all_targets = {
 	'vhacd-util'          => { service => 0 }
 };
 
+
+my @system_lib_paths = ("/usr/lib64", "/usr/lib/x86_64-linux-gnu", "/usr/lib");
+my @x11_lib_paths    = (@system_lib_paths, "/usr/X11R6/lib64");
+my @system_qt_paths  = ('/usr/lib64/cmake', '/usr/lib/x86_64-linux-gnu/cmake');
+
+
+
 # Libraries that don't go into an AppImage.
 # Taken from https://github.com/AppImage/pkg2appimage/blob/master/excludelist
 # Trimmed down a bit, as I want a minimum of requirements for installation.
@@ -125,6 +132,9 @@ my @excluded_system_libs = (
 # Failing to add them to the appimage results in them being loaded from the host system,
 # often resulting in a crash.
 #
+# The listed names will be searched in the directories listed in @system_lib_paths
+#
+#
 # Debugging advice:
 # * use 'pipe info sharedlibrary | grep -v tmp' to quickly see which host libraries are loaded
 # * use 'set stop-on-solib-events 1' to stop on library load.
@@ -157,8 +167,6 @@ my $appimagetool_release = 13;
 my $appimagetool_url = "https://github.com/AppImage/AppImageKit/releases/download/${appimagetool_release}/appimagetool-x86_64.AppImage";
 
 
-my @x11_lib_paths = ("/usr/lib64", "/usr/X11R6/lib64", "/usr/lib/x86_64-linux-gnu", "/usr/lib");
-my @system_qt_paths = ('/usr/lib64/cmake', '/usr/lib/x86_64-linux-gnu/cmake');
 
 # Amount of RAM needed to build Vircadia, per compiler process.
 my $mem_per_core_vircadia = 1 * 1024 * 1024;
@@ -2105,20 +2113,33 @@ sub install_into_appimage {
 		}
 	}
 
-	my %deps = map { $_ => 1 } @dep_list;
-
 	# Some files don't seem to be properly detected as dependencies, probably loaded
 	# at runtime with dlopen. Force them into the package.
-	foreach my $file (
-		glob("/usr/lib/x86_64-linux-gnu/libxcb*"),
-	 	glob("/usr/lib/x86_64-linux-gnu/libxkb*"),
-		glob("/usr/lib/x86_64-linux-gnu/opensc-*"),
-		glob("/usr/lib/x86_64-linux-gnu/libopensc.so*"),
-		glob("/usr/lib/x86_64-linux-gnu/p11-kit-proxy.so*")
-		) {
-		info("Hack: Adding $file\n");
-		$deps{$file} = 1;
+
+	info("Finding additional system libraries...\n");
+	foreach my $libdir (@system_lib_paths) {
+		info("\t$libdir:\n");
+		if (!-d "$libdir") {
+			warning("\t\t(directory missing, skipping)\n");
+			next;
+		}
+
+		find(
+			sub {
+				my $file = basename($File::Find::name);
+
+				foreach my $regex (@included_system_libs) {
+					if ( $file =~ /$regex/ ) {
+						push @dep_list, $File::Find::name;
+						info("\t\t$file\n");
+					}
+				}
+			}, $libdir);
 	}
+
+
+	my %deps = map { $_ => 1 } @dep_list;
+
 
 	info("Copying missing system libraries... ");
 	mkdir_path("$appimage_base/usr/lib64");
