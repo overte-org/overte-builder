@@ -883,6 +883,11 @@ sub build {
 
 	push @cmake_extra_opts, "-DCMAKE_BUILD_TYPE=${build_type}";
 
+	if ( $DD->{cmake_extra_arguments} ) {
+		debug("Adding extra CMake arguments from config: " . join(';',  @{ $DD->{cmake_extra_arguments} }) );
+		push @cmake_extra_opts, @{ $DD->{cmake_extra_arguments} };
+	}
+
 	important("Running cmake " . join(' ', @cmake_extra_opts) . "\n");
 
 	run($DD->{cmake}, "../source", @cmake_extra_opts);

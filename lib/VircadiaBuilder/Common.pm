@@ -64,8 +64,16 @@ sub run {
 		%opts = %{ shift(@command) }
 	}
 
+	$Data::Dumper::Terse = 1;
+	$Data::Dumper::Indent = 0;
+
 	my $cmdstr = join(' ', @command);
+	my $dmpstr = Data::Dumper->Dump([\@command], ["\@cmd"]);
+
 	debug("RUN: $cmdstr\n");
+	debug("DMP: $dmpstr\n");
+
+
 	my $out_buf = "";
 	my $err_buf = "";
 	my $start = time;
@@ -81,15 +89,14 @@ sub run {
 	if ( $@ =~ /^open3:/ ) {
 		my $errstr = $@;
 		$errstr =~ s/^open3://;
+		chomp $errstr;
 
 		if ( $opts{fail_ok} ) {
 			warning("Failed to run '$cmdstr'. Command failed to start: $errstr\n");
 			return;
 		} else {
-			$Data::Dumper::Terse = 1;
-			$Data::Dumper::Indent = 0;
 			fatal("Failed to run '$cmdstr'. Command failed to start: $errstr\n" .
-			      "Dumped form: " . Data::Dumper->Dump([\@command], ["\@cmd"]));
+			      "Dumped form: $dmpstr");
 		}
 	} elsif ( $@ ) {
 		if (!$opts{fail_ok}) {
@@ -137,7 +144,8 @@ sub run {
 		if ( $opts{fail_ok} ) {
 			warning( "Command '$cmdstr' " . error_to_text($?, $!) . "\n" ) unless ($opts{quiet});
 		} else {
-			fatal( "Command '$cmdstr' " . error_to_text($?, $!) . "\n" );
+			fatal( "Command '$cmdstr' " . error_to_text($?, $!) . "\n" .
+			       "Dumped form: $dmpstr\n");
 		}
 	}
 
