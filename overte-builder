@@ -357,7 +357,6 @@ $root_dir     = "$ENV{HOME}/$fork_name";
 $inst_dir     = "$root_dir/install"; # Where files will be installed
 $binary_dir   = $inst_dir;           # Where the final binaries are found
 
-
 help(1) if ($cmd_help);
 
 get_supported() if ( $cmd_get_supported );

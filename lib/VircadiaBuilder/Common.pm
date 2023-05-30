@@ -7,6 +7,8 @@ use Symbol qw(gensym);
 use Exporter;
 use IPC::Open3;
 use File::Spec;
+use Data::Dumper qw(Dumper);
+
 
 our (@EXPORT, @ISA);
 
@@ -84,7 +86,10 @@ sub run {
 			warning("Failed to run '$cmdstr'. Command failed to start: $errstr\n");
 			return;
 		} else {
-			fatal("Failed to run '$cmdstr'. Command failed to start: $errstr\n");
+			$Data::Dumper::Terse = 1;
+			$Data::Dumper::Indent = 0;
+			fatal("Failed to run '$cmdstr'. Command failed to start: $errstr\n" .
+			      "Dumped form: " . Data::Dumper->Dump([\@command], ["\@cmd"]));
 		}
 	} elsif ( $@ ) {
 		if (!$opts{fail_ok}) {
@@ -226,7 +231,7 @@ sub fatal {
 		important("To aid with debugging, please re-run with the --collect-info argument.\n");
 	}
 
-	close $log_fh;
+	close $log_fh if ($log_fh);
 
 
 	my $compressed = "vircadia-builder-error-$timestamp.tar.gz";
