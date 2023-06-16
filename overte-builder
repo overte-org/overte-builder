@@ -178,9 +178,9 @@ my $repo;
 my $qt_repo      = "git://code.qt.io/qt/qt5.git";
 my $repo_tag;
 
-my $root_dir     = "$ENV{HOME}/Vircadia";
-my $inst_dir     = "$root_dir/install"; # Where files will be installed
-my $binary_dir   = $inst_dir;           # Where the final binaries are found
+my $root_dir;    # Base directory, eg, $HOME/Overte.
+my $inst_dir;    # Installation dir, subdirectory under $root_dir. Eg, $root_dir/install";
+my $binary_dir;  # Where the final binaries are found
 my $files_dir    = "$ENV{HOME}/overte-files"; # Where cmake downloads files to
 
 my $rel_type     = "DEV"; # DEV by default.
@@ -353,9 +353,9 @@ if ( $opt_fork eq "vircadia" ) {
 
 debug("Fork is $fork_name, repo $repo\n");
 
-$root_dir     = "$ENV{HOME}/$fork_name";
-$inst_dir     = "$root_dir/install"; # Where files will be installed
-$binary_dir   = $inst_dir;           # Where the final binaries are found
+$root_dir     //= "$ENV{HOME}/$fork_name";
+$inst_dir     //= "$root_dir/install"; # Where files will be installed
+$binary_dir   //= $inst_dir;           # Where the final binaries are found
 
 help(1) if ($cmd_help);
 
