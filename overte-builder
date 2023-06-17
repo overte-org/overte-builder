@@ -2215,7 +2215,7 @@ sub install_into_appimage {
 
 	info("Creating AppImage...\n");
 	chdir($root_dir);
-	my $appimage_filename = $template->fork_id . "-" . $template->version . "-x86_64.AppImage";
+	my $appimage_filename = $template->fork_id . "-" . $template->version . "-debug-x86_64.AppImage";
 
 	run($tool_path, $appimage_base, $appimage_filename);
 
