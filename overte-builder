@@ -463,13 +463,16 @@ sub detect_distro {
 
 		debug("Parsing /etc/os-release...\n");
 		foreach my $line (@release_info) {
-			my ($k, $v) = $line =~ /^(\w+)=(.*?)$/;
+			$line =~ s/#.*$//;
+			my ($k, $v);
 
-			$v =~ s/^"//;
-			$v =~ s/"$//;
+			if (($k, $v) = $line =~ /^(\w+)=(.*?)$/) {
+				$v =~ s/^"//;
+				$v =~ s/"$//;
 
-			$release_data{$k} = $v;
-			debug("\t$k => '$v'\n");
+				$release_data{$k} = $v;
+				debug("\t$k => '$v'\n");
+			}
 		}
 
 		my $id          = $release_data{ID} . "-" . $release_data{VERSION_ID};
