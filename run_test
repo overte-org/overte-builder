@@ -7,7 +7,7 @@ if [ -z "$container" ] ; then
 	echo ""
 	echo "Suggested containers"
 	echo "--------------------"
-	podman image list --noheading | grep 'vircadia-builder/'
+	podman image list --noheading | grep 'overte-builder/'
 	exit 1
 else
 	shift
