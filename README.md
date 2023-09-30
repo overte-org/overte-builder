@@ -32,6 +32,7 @@ This program exists to make it easier to build Overte on various Linux distribut
 * Ubuntu 22.04 (codename Jammy Jellyfish, can use system Qt)
 * Ubuntu 22.10 (codename Kinetic Kudu, can use system Qt)
 * OpenSuSE Tumbleweed
+* Rocky Linux (can use system Qt, but additional repositories are needed)
 * (more coming soon)
 
 ## Notes on CentOS / RHEL 8.x builds
