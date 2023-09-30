@@ -21,6 +21,7 @@ This program exists to make it easier to build Overte on various Linux distribut
 * Fedora 36 (can use system Qt)
 * Fedora 37 (can use system Qt)
 * Fedora 38 (can use system Qt)
+* Fedora 39 (can use system Qt)
 * Manjaro (can use system Qt)
     * Manjaro ARM
 * Ubuntu 18.04.x (codename Bionic, has pre-built Qt). See note below.
