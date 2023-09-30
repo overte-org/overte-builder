@@ -40,3 +40,6 @@ inc/
 # Visual studio
 .vstags
 .vscode/
+
+# Ignore temporary files written during Docker generation
+test-helpers/docker/*/files
