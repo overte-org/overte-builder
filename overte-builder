@@ -885,6 +885,7 @@ sub build {
 	}
 
 	push @cmake_extra_opts, "-DCMAKE_BUILD_TYPE=${build_type}";
+	push @cmake_extra_opts, "-DJSDOC_ENABLED:BOOL=TRUE";
 
 	if ( $DD->{cmake_extra_arguments} ) {
 		debug("Adding extra CMake arguments from config: " . join(';',  @{ $DD->{cmake_extra_arguments} }) );

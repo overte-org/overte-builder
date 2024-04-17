@@ -56,10 +56,20 @@ Before starting the build
 
 ## Notes on Ubuntu 18.04
 
-Overte requires OpenSSL 1.1 at the very least, but installing libssl-dev conflicts with installing npm.
-Therefore the system npm package can't be used, and isn't listed as a dependency. As a result, jsdoc can't be generated, and tab completion in the JS console won't work.
+**No longer supported**
 
-It's possible to install npm from an outside source, and the build process should find it and use it in that case.
+~~Overte requires OpenSSL 1.1 at the very least, but installing libssl-dev conflicts with installing npm.~~
+~~Therefore the system npm package can't be used, and isn't listed as a dependency. As a result, jsdoc can't be generated, and tab completion in the JS console won't work.~~
+
+~~It's possible to install npm from an outside source, and the build process should find it and use it in that case.~~
+
+## Notes on Ubuntu 20.04
+
+JS Documentation requires nodejs to be generated. To install:
+
+    curl -sL https://deb.nodesource.com/setup_16.x -o /tmp/nodesource_setup.sh
+    bash /tmp/nodesource_setup.sh
+    apt-get install nodejs
 
 ## Notes on Amazon Linux 2
 
@@ -69,10 +79,8 @@ To deal with this issue, run the `install_amazon_linux_deps.sh` script before ru
 
 ## Unsupported platforms
 
-* Amazon Linux 2
-
-Currently unsupported due to it's outdated and tiny package base.
-
+* **Amazon Linux 2**: Currently unsupported due to its outdated and tiny package base.
+* **Ubuntu 18.04**: Requires too many workarounds and no longer under standard support, please upgrade.
 
 ## Instructions:
 
