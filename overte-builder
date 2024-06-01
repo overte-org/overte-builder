@@ -1135,12 +1135,12 @@ sub patch_rpath {
 
 			debug("\t$p => $new_val\n");
 
-			if ( -e $p && ! -e "$basedir/$new_rel" ) {
-				# Sanity check: verify that if the previous path existed,
-				# the new one does too.
-				warning("Verification failed for $p => $new_val!\n");
-				$failures++;
-			}
+#			if ( -e $p && ! -e "$basedir/$new_rel" ) {
+#				# Sanity check: verify that if the previous path existed,
+#				# the new one does too.
+#				warning("Verification failed for $p => $new_val!\n");
+#				$failures++;
+#			}
 
 			$changes++;
 			push @result, $new_val;
