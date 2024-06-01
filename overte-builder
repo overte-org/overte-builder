@@ -1138,7 +1138,7 @@ sub patch_rpath {
 			if ( -e $p && ! -e "$basedir/$new_rel" ) {
 				# Sanity check: verify that if the previous path existed,
 				# the new one does too.
-				warning("Verification failed for $p => $new_val! There may be symlinks in the path.\n");
+				warning("Verification failed for changing library path $p => $basedir/$new_rel! There may be symlinks in the path.\n");
 				$failures++;
 			}
 
