@@ -741,7 +741,7 @@ sub collect_info {
 		$opt_levels .= ", " if ($opt_levels);
 		$opt_levels .= $lvl;
 	}
-	$opt_levels .= "or help";
+	$opt_levels .= " or help";
 
 	my $rl = Term::ReadLine->new('vircadia_setup');
 	my $ok = $opt_auto ? "yes" : "no";
