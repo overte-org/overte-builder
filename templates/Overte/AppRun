@@ -7,18 +7,18 @@ err() {
 
 curdir=`dirname "$0"`
 
-if [ "$QT_QPA_PLATFORM" == "wayland-egl" ] ; then
+if [ "$QT_QPA_PLATFORM" == "wayland-egl" ] || [ "$QT_QPA_PLATFORM" == "wayland" ]; then
     # Running under Wayland
 
     if [ -d "$curdir/qt5-install" ] ; then
         # We've been built from a pre-packaged Qt, which may not have included Wayland support
 
-        if [ ! -f "$curdir/qt5-install/plugins/platforms/libwayland-egl.so" ] ; then
+        if [ ! -f "$curdir/qt5-install/plugins/platforms/libwayland-egl.so" ] || [ ! -f "$curdir/qt5-install/plugins/platforms/libwayland-generic.so" ] ; then
             err ""
             err "Running under Wayland, but this AppImage lacks the Qt Wayland backend. Forcing xcb backend instead."
             err "This warning should be harmless and not affect functionality."
             err ""
-            err "Looked in '$curdir/qt5-install/plugins/platforms/libwayland-egl.so'"
+            err "Looked in '$curdir/qt5-install/plugins/platforms/libwayland-egl.so' and '$curdir/qt5-install/plugins/platforms/libwayland-generic.so'"
             err ""
 
             export QT_QPA_PLATFORM=xcb
