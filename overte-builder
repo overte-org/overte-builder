@@ -2241,7 +2241,7 @@ sub install_into_appimage {
 	);
 
 	info("Creating stripped AppImage...\n");
-	my $appimage_filename_nodebug = $template->fork_id . "-" . $template->version . "-nodebug-x86_64.AppImage";
+	my $appimage_filename_nodebug = $template->fork_id . "-" . $template->version . "-x86_64.AppImage";
 	run($tool_path, $appimage_base, $appimage_filename_nodebug);
 
 	info("Created AppImage with debugging   : ");
