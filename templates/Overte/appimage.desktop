@@ -5,5 +5,5 @@ Terminal=false
 Type=Application
 Exec=/AppRun
 Icon=Overte
-Categories=Graphics
+Categories=Game;Network;Qt;
 X-AppImage-Version=$version
