@@ -51,14 +51,18 @@ my $all_targets = {
 	'vhacd-util'          => { service => 0 }
 };
 
+my @system_lib_paths;
+my @x11_lib_paths;
+my @system_qt_paths;
+
 if ( $arch eq "x86_64" ) {
-	my @system_lib_paths = ("/usr/lib64", "/usr/lib/x86_64-linux-gnu", "/usr/lib");
-	my @x11_lib_paths    = (@system_lib_paths, "/usr/X11R6/lib64");
-	my @system_qt_paths  = ('/usr/lib64/cmake', '/usr/lib/x86_64-linux-gnu/cmake');
+	@system_lib_paths = ("/usr/lib64", "/usr/lib/x86_64-linux-gnu", "/usr/lib");
+	@x11_lib_paths    = (@system_lib_paths, "/usr/X11R6/lib64");
+	@system_qt_paths  = ('/usr/lib64/cmake', '/usr/lib/x86_64-linux-gnu/cmake');
 } elsif ( $arch eq "aarch64" ) {
-	my @system_lib_paths = ("/usr/lib/aarch64-linux-gnu ", "/usr/lib");
-	my @x11_lib_paths    = (@system_lib_paths, "/usr/X11R6/lib64");
-	my @system_qt_paths  = ('/usr/lib/aarch64-linux-gnu/cmake');
+	@system_lib_paths = ("/usr/lib/aarch64-linux-gnu ", "/usr/lib");
+	@x11_lib_paths    = (@system_lib_paths, "/usr/X11R6/lib64");
+	@system_qt_paths  = ('/usr/lib/aarch64-linux-gnu/cmake');
 } else {
 	fatal("Architecture $arch not supported");
 }
@@ -163,31 +167,28 @@ my $optimization_presets = {
 	},
 	compatible  => {
 		description => "Build code optimized for SSE3 (or without architecture optimization on aarch64). This should work on almost anything.",
-		if ( $arch eq "x86_64" ) {
-			flags       => '-msse3',
-		} elsif ( $arch eq "aarch64" ) {
-			flags       => '',
-		} else {
-			fatal("Architecture $arch not supported");
-		}
 	},
 	none => {
 		description => "Do not perform any CPU-specific optimizations. Suitable for any hardware.",
-		if ( $arch eq "x86_64" ) {
-			flags       => '-march=x86-64',
-		} elsif ( $arch eq "aarch64" ) {
-			flags       => '',
-		} else {
-			fatal("Architecture $arch not supported");
-		}
 	}
 };
 
+if ( $arch eq "x86_64" ) {
+	$optimization_presets->{compatible}->{flags} = '-msse3';
+	$optimization_presets->{none}->{flags} = '-march=x86-64';
+} elsif ( $arch eq "aarch64" ) {
+	$optimization_presets->{compatible}->{flags} = '';
+	$optimization_presets->{none}->{flags} = '';
+} else {
+	fatal("Architecture $arch not supported");
+}
+
+my $appimagetool_url;
 my $appimagetool_release = 13;
 if ( $arch eq "x86_64" ) {
-	my $appimagetool_url = "https://github.com/AppImage/AppImageKit/releases/download/${appimagetool_release}/appimagetool-x86_64.AppImage";
+	$appimagetool_url = "https://github.com/AppImage/AppImageKit/releases/download/${appimagetool_release}/appimagetool-x86_64.AppImage";
 } elsif ( $arch eq "aarch64" ) {
-	my $appimagetool_url = "https://github.com/AppImage/AppImageKit/releases/download/${appimagetool_release}/appimagetool-aarch64.AppImage";
+	$appimagetool_url = "https://github.com/AppImage/AppImageKit/releases/download/${appimagetool_release}/appimagetool-aarch64.AppImage";
 } else {
 	fatal("Architecture $arch not supported");
 }
