@@ -220,6 +220,8 @@ my $optimization_level;
 
 my $desktop;
 my $distro;
+my $architecture;
+
 
 my $using_system_qt;
 
@@ -405,6 +407,7 @@ $build_cores    //= calculate_cores($fork_name, $mem_per_core_vircadia);
 $build_cores_qt //= calculate_cores("Qt", $mem_per_core_qt);
 $desktop        //= get_desktop();
 $distro         //= detect_distro();
+$architecture   //= detect_arch();
 
 
 if ( !exists $data->{$distro} ) {
@@ -530,7 +533,15 @@ sub detect_distro {
 	fatal("Failed to detect distribution! Couldn't find /etc/os-release.");
 }
 
+sub detect_arch() {
+	info "Detecting architecture... ";
+	my $arch = `uname -m`;
+	chomp $arch;
 
+	info_ok($arch . "\n");
+
+	return $arch;
+}
 
 sub get_package_list {
 	info("Getting the package list... ");
@@ -2248,6 +2259,8 @@ sub install_into_appimage {
 	chdir($root_dir);
 	my $appimage_filename = $template->fork_id . "-" . $template->version . "-debug-" . $arch . ".AppImage";
 
+	# appimagetool can complain about architecture, just give it the system one.
+	$ENV{ARCH} = $architecture;
 	run($tool_path, $appimage_base, $appimage_filename);
 
 
