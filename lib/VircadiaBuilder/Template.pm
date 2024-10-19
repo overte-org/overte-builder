@@ -106,6 +106,16 @@ will generate and return the right filename when called.
 sub write_appstream {
     my ($self, $appimage_dir, %values) = @_;
 
+
+    my ($appstream_major, $appstream_minor, $appstream_revision) = $self->get_appstream_version();
+
+    my $appstream_file = "appstream.xml";
+
+    if ($appstream_major < 1) {
+        $appstream_file = "appstream-v0.xml";
+    }
+
+
     my $dest_filename;
 
     if ( $self->{fork} eq "Overte" ) {
@@ -118,11 +128,28 @@ sub write_appstream {
         die "Unknown fork: $self->{fork}";
     }
 
-    $self->_deploy("appstream.xml", $dest_filename, %values);
+    $self->_deploy($appstream_file, $dest_filename, %values);
 
     return $dest_filename;
 }
 
+=item get_appstream_version()
+
+Returns the system's version of the appstream specification.
+
+Used for compatibility.
+
+=cut
+
+sub get_appstream_version {
+    my ($self) = @_;
+
+    my $appstream_version = run("/usr/bin/appstreamcli", "--version");
+    (undef, $appstream_version) = split(/:/, $appstream_version);
+    my ($maj, $min, $rev) = split(/\./, $appstream_version);
+
+    return ($maj, $min, $rev);
+}
 
 =item write_appimage_desktop_file($destination, %values)
 

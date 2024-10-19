@@ -2261,8 +2261,25 @@ sub install_into_appimage {
 
 	# appimagetool can complain about architecture, just give it the system one.
 	$ENV{ARCH} = $architecture;
-	run($tool_path, $appimage_base, $appimage_filename);
 
+
+	my ($appstream_major, $appstream_minor, $appstream_revision) = $template->get_appstream_version();
+	my @tool_options;
+
+
+	if ($appstream_major < 1) {
+		# For some reason, Ubuntu 20.04 appstreamcli always fails to find the desktop file:
+		# org.overte.interface.appdata.xml
+        #  W: org.overte.interface:~: desktop-file-not-found
+		#
+		# even though it is there. I think it's a bug. So we'll just ignore it.
+
+		warning("Old system appstreamcli, will ignore specification errors\n");
+		push @tool_options, "-n";
+	}
+
+
+	run($tool_path, @tool_options, $appimage_base, $appimage_filename);
 
 	info("Stripping symbols for non-debug AppImage...\n");
 	find(
@@ -2282,7 +2299,7 @@ sub install_into_appimage {
 
 	info("Creating stripped AppImage...\n");
 	my $appimage_filename_nodebug = $template->fork_id . "-" . $template->version . "-" . $arch . ".AppImage";
-	run($tool_path, $appimage_base, $appimage_filename_nodebug);
+	run($tool_path, @tool_options, $appimage_base, $appimage_filename_nodebug);
 
 	info("Created AppImage with debugging   : ");
 	info_ok( File::Spec->join($root_dir, $appimage_filename) . "\n");
