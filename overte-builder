@@ -2130,7 +2130,8 @@ sub install_into_appimage {
 	info("Finding plugins...\n");
 	my @plugin_dirs = ("$root_dir/qt5-install/plugins/platforms", "$root_dir/build/$target/plugins");
 	if ( $using_system_qt ) {
-		push @plugin_dirs, "/usr/lib64/qt5/plugins/ ";
+		push @plugin_dirs, "/usr/lib64/qt5/plugins";
+		push @plugin_dirs, "/usr/lib/x86_64-linux-gnu/qt5/plugins";
 	}
 
 	foreach my $plugin_dir (@plugin_dirs) {
