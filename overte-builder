@@ -17,7 +17,7 @@ use VircadiaBuilder::Package;
 use VircadiaBuilder::Package::Archive;
 use VircadiaBuilder::Template;
 use POSIX ();
-
+use Data::Dumper qw(Dumper);
 
 $| = 1;
 
@@ -550,6 +550,10 @@ sub detect_arch() {
 
 sub get_package_list {
 	info("Getting the package list... ");
+	if (!defined $DD->{package_manager}) {
+		fatal("Internal error: Package manager not defined for current distribution '$distro'. Data dump: " . Dumper([$DD]));
+	}
+
 	my @packages;
 	if ( $DD->{package_manager} eq "dnf" || $DD->{package_manager} eq "yum" || $DD->{package_manager} eq "zypper" ) {
 		@packages = read_from_cmd("rpm", "-qa", "--qf", "%{NAME}\\n");
