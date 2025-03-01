@@ -531,6 +531,14 @@ sub detect_distro {
 			# here to emphasize that bookworm has not been released yet.
 		}
 
+		if ( $release_data{ID} eq "debian" && $release_data{PRETTY_NAME} =~ m/trixie/ ) {
+			$id = "debian-trixie";
+
+			# Debian Bookworm is in testing and therefore doesn't have a VERSION_ID yet.
+			# While the VERSION_ID will change to "12" in the future, we are using "bookworm"
+			# here to emphasize that bookworm has not been released yet.
+		}
+
 		info_ok("$pretty_name ($id)\n");
 		return $id;
 	}
