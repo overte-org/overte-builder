@@ -1597,35 +1597,7 @@ sub get_source_from_git {
 	if ( ! -d "$root_dir/$destdir/.git" ) {
 		clone_repo($url, $destdir, $tag, %opts);
 	} else {
-		info("Checking if updating the existing source is possible... ");
-
-		chdir("$root_dir/$destdir") or fatal("Can't chdir into $root_dir/$destdir: $!");
-		my @remotes = read_from_cmd("git", "remote", "-v");
-		my $no_update;
-
-		foreach my $line (@remotes) {
-			my ($name, $remote) = split(/\s+/, $line);
-			if ( $name ne "origin" ) {
-				info_ok("no, additional remote $name present.\n");
-				$no_update=1;
-				last;
-			}
-
-			if ( $remote ne $url ) {
-				info_ok("no, url '$remote' differs from wanted URL.\n");
-				$no_update=1;
-				last;
-			}
-		}
-
-		chdir($root_dir);
-
-		if ( $no_update ) {
-			clone_repo($url, $destdir, $tag, %opts);
-		} else {
-			info_ok("yes\n");
-			update_repo($url, $destdir, $tag, %opts);
-		}
+		update_repo($url, $destdir, $tag, %opts);
 	}
 }
 
@@ -1667,21 +1639,48 @@ sub update_repo {
 		fatal("Can't update $root_dir/$destdir: there doesn't seem to be a git repo there!");
 	}
 
+
 	info_ok("Already cloned, updating...\n");
+
+	chdir("$root_dir/$destdir") or die "Can't change to directory $destdir";
+
+	my $remote_name;
+	my @remotes = read_from_cmd("git", "remote", "-v");
+
+	foreach my $line (@remotes) {
+		my ($name, $remote_url) = split(/\s+/, $line);
+		if ($remote_url eq $url) {
+			info("Will use existing remote $name\n");
+			$remote_name = $name;
+			last;
+		} else {
+			$remote_name = $url;
+			$remote_name =~ s/^.*?\:\/\///;
+			$remote_name =~ s/[^a-zA-Z0-9_-]/_/g;
+
+			info("Creating new remote $remote_name\n");
+			run("git", "remote", "add", $remote_name, $url);
+			last;
+		}
+	}
+
 
 	if ( !$opt_keep_source ) {
 		chdir("$root_dir/$destdir");
-		run("git", "fetch", "origin", "$tag:refs/remotes/origin/$tag");
+		#run("git", "fetch", "origin", "$tag:refs/remotes/origin/$tag");
+		info("Updating remote $remote_name\n");
+
+		run("git", "fetch", $remote_name);
 		run("git", "submodule", "update", "-f", "--init", "--recursive") unless ($opts{'no_submodules'});
 		run("git", "clean", "-f");
 
 		if ( $opts{pr} ) {
 			my $pr = $opts{pr};
 			info("Checking out PR $pr\n");
-			run("git", "fetch", "origin", "pull/$pr/head:PR-$pr");
-			run("git", "checkout", "PR-$pr");
+			run("git", "fetch", $remote_name, "pull/$pr/head:PR-$pr");
+			run("git", "reset", "--hard", "PR-$pr");
 		} else {
-			run("git", "checkout", "origin/$tag");
+			run("git", "reset", "--hard", "$remote_name/$tag");
 		}
 	}
 
